@@ -4,6 +4,7 @@ package com.example.gigglz.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -14,7 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -44,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.gigglz.R
 import com.example.gigglz.ui.theme.Primary
+import com.example.gigglz.ui.theme.YellowC
 import androidx.compose.material3.Text as Text1
 
 
@@ -276,6 +280,34 @@ fun ResendAndVerifyButton() {
 
 
 
+    }
+
+}
+@Preview(showBackground = true)
+@Composable
+fun Three_Dot(
+    modifier: Modifier = Modifier,
+    selected:Int = 0
+){
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ){
+        for (i in 0..2){
+            Box(
+                modifier = Modifier
+                    .size(8.dp)
+                    .background(
+                        color = if(selected==i) YellowC else Color.Gray,
+                        shape = CircleShape
+                    )
+                    .border(
+                        width = 1.dp,
+                        color = if(selected==i) YellowC else Color.Gray,
+                        shape = CircleShape
+                    )
+            )
+        }
     }
 
 }
