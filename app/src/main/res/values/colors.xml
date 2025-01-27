@@ -8,4 +8,9 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="OTP_Border">#F4BB10</color>
+    <color name="GreenC">#1C9050</color>
+    <color name="ItemTagBorder">#0049A3</color>
+    <color name="SortingItem">#050533</color>
+    <color name="ItemBox">#C0DCFF</color>
+    <color name="blurry_gray">#69D9D9D9</color>
 </resources>
