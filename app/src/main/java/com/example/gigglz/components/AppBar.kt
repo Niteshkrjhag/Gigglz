@@ -324,7 +324,7 @@ fun HomeScreenItem() {
                                 text = "${formattedDefault}",
                                 fontSize = fontSize,
                                 fontWeight = FontWeight(600),
-                                lineHeight = 18.sp,
+                                lineHeight = 24.sp,
                                 modifier = Modifier,
                                 fontColor = colorResource(R.color.GreenC)
                             )
@@ -334,8 +334,7 @@ fun HomeScreenItem() {
                                 fontWeight = FontWeight(600),
                                 lineHeight = 12.sp,
                                 modifier = Modifier
-                                    .padding(start = 4.dp)
-                                    .align(Alignment.End),
+                                    .align(Alignment.CenterHorizontally),
                                 fontColor = colorResource(R.color.GreenC)
                             )
                         }
