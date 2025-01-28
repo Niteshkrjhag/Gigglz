@@ -9,10 +9,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -34,10 +38,12 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -46,19 +52,24 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.example.gigglz.R
 import java.text.DecimalFormat
 import java.util.Locale
 
 
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopAppBarr(
-    navController: NavHostController,
-    content: @Composable () -> Unit = { HomeScreenItem() }
+    navController: NavHostController= rememberNavController(),
+    content: @Composable () -> Unit ={}
 ) {
+
     Scaffold(
-        modifier =Modifier,
+        modifier =Modifier
+            .navigationBarsPadding(),
         containerColor = Color.White,
         topBar = {
             Row(
@@ -87,6 +98,7 @@ fun TopAppBarr(
                     painter = painterResource(R.drawable.gigglzlogo),
                     contentDescription = "App Logo",
                     modifier = Modifier
+                        .offset(y = 5.dp)
                         .size(width = 143.dp, height = 73.dp)
                         .weight(1f)
                 )
@@ -121,7 +133,7 @@ fun TopAppBarr(
         Column(
             modifier = Modifier.padding(innerPadding)
         ) {
-                content()
+               content()
         }
 //        NavigationGraph(navController = navController)  // uncomment it when you need navigation as now uncommenting with will not show preview
     }
@@ -130,6 +142,16 @@ fun TopAppBarr(
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenItem() {
+
+    val configuration = LocalConfiguration.current
+    val fontSize = with(configuration) {
+        when {
+            fontScale > 1.2f -> 14.sp // Reduce font size for larger font scales
+            screenWidthDp < 360 -> 12.sp // Reduce font size for smaller screens
+            else -> 16.sp // Default font size
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -179,12 +201,13 @@ fun HomeScreenItem() {
 
                 // Column for content (text and icons)
                 Column(
-                    modifier = Modifier.padding(
-                        start = 4.dp,
-                        top = 4.dp,
-                        bottom = 1.dp,
-                        end = 12.dp
-                    )
+                    modifier = Modifier
+                        .heightIn(max = 142.dp) // Constrain height to image height
+                        .padding(
+                            start = 4.dp,
+                            top = 4.dp,
+                            bottom = 1.dp
+                        )
                 ) {
                     // Title and timestamp
                     Row {
@@ -273,7 +296,10 @@ fun HomeScreenItem() {
 
                     // Price row
                     Row(
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .wrapContentSize() // Wrap content
+                            .align(Alignment.CenterHorizontally) // Center horizontally
                     ) {
                         val formattedDefault = formatCurrency(1000)
                         ItemTag(
@@ -291,19 +317,20 @@ fun HomeScreenItem() {
                             fontColor = colorResource(R.color.ItemTagBorder)
                         )
                         Spacer(Modifier.weight(1f))
-                        Column() {
+                        Column(
+                            modifier = Modifier.wrapContentSize()
+                        ) {
                             BodyText(
                                 text = "${formattedDefault}",
-                                fontSize = 20.sp,
+                                fontSize = fontSize,
                                 fontWeight = FontWeight(600),
-                                lineHeight = 24.sp,
-                                modifier = Modifier
-                                    .padding(start = 4.dp),
+                                lineHeight = 18.sp,
+                                modifier = Modifier,
                                 fontColor = colorResource(R.color.GreenC)
                             )
                             BodyText(
                                 text = "200/day",
-                                fontSize = 12.sp,
+                                fontSize = 10.sp,
                                 fontWeight = FontWeight(600),
                                 lineHeight = 12.sp,
                                 modifier = Modifier
