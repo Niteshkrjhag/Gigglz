@@ -13,4 +13,8 @@
     <color name="SortingItem">#050533</color>
     <color name="ItemBox">#C0DCFF</color>
     <color name="blurry_gray">#69D9D9D9</color>
+    <color name="sorting_Background">#4D6C8BB7</color>
+    <color name="LightGrayColor">#CCCCCC</color>
+    <color name="OtpBoxBackground">#F4BB10</color>
+    <color name="IconColor">#6C7072</color>
 </resources>
