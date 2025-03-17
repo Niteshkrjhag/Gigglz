@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -64,7 +65,7 @@ fun ProfileScreen() {
     var email by remember{ mutableStateOf("") }
     var phoneNum by remember{ mutableStateOf("") }
     var whatsAppNum by remember{ mutableStateOf("") }
-    var isExpanded by remember{ mutableStateOf("") }
+    var isExpanded by remember{ mutableStateOf(true) }
 
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
 
@@ -94,13 +95,16 @@ fun ProfileScreen() {
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
+                .fillMaxHeight()
         ){
             ContactDetails(
                 modifier = Modifier
                     .padding(horizontal = 15.dp),
                 email = email,
                 phoneNum = phoneNum,
-                whatsAppNum = whatsAppNum
+                whatsAppNum = whatsAppNum,
+                onClick = {isExpanded = !isExpanded},
+                isExpand = isExpanded
             )
             Spacer(Modifier.height(8.dp))
             PrimaryDetails1(
@@ -366,74 +370,85 @@ private fun ContactDetails(
     modifier: Modifier = Modifier,
     email: String,
     phoneNum: String,
-    whatsAppNum: String
+    whatsAppNum: String,
+    onClick:()->Unit = {},
+    isExpand:Boolean = false
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val density = LocalDensity.current
 
-    Card(
-        modifier = modifier
-            .shadow(
-                elevation = 12.dp,
-                shape = RoundedCornerShape(screenWidth * 0.06f), // Dynamic corner radius
-                spotColor = Color.Black,
-                ambientColor = Color.DarkGray
-            ),
-        shape = RoundedCornerShape(screenWidth * 0.06f),
-        colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFF4F4F4)
-        )
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(screenWidth * 0.04f), // Responsive padding
-            verticalArrangement = Arrangement.spacedBy(screenWidth * 0.008f) // Responsive spacing
+    if(!isExpand){
+        Card(
+            modifier = modifier
+                .shadow(
+                    elevation = 12.dp,
+                    shape = RoundedCornerShape(screenWidth * 0.06f), // Dynamic corner radius
+                    spotColor = Color.Black,
+                    ambientColor = Color.DarkGray
+                ),
+            shape = RoundedCornerShape(screenWidth * 0.06f),
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0xFFF4F4F4)
+            )
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(screenWidth * 0.04f), // Responsive padding
+                verticalArrangement = Arrangement.spacedBy(screenWidth * 0.008f) // Responsive spacing
             ) {
-                IconButton(
-                    onClick = {}
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.KeyboardArrowDown,
-                        contentDescription = "Minimize",
+                    IconButton(
+                        onClick = onClick
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowDown,
+                            contentDescription = "Minimize",
+                            modifier = Modifier
+                                .size(screenWidth * 0.12f), // Dynamic icon size
+                            tint = Color.Black
+                        )
+                    }
+                    Text(
+                        text = "Contact Details",
+                        style = TextStyle(
+                            fontSize = with(density) { (screenWidth * 0.04f).toSp() }, // Dynamic font size
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color(0xFF1D1B20),
+                        )
+                    )
+                    Spacer(Modifier.weight(1f))
+                    Image(
+                        painter = painterResource(R.drawable.image_53),
+                        contentDescription = "Completed",
+                        contentScale = ContentScale.FillBounds,
                         modifier = Modifier
-                            .size(screenWidth * 0.12f), // Dynamic icon size
-                        tint = Color.Black
+                            .size(screenWidth * 0.07f) // Responsive image size
                     )
                 }
-                Text(
-                    text = "Contact Details",
-                    style = TextStyle(
-                        fontSize = with(density) { (screenWidth * 0.04f).toSp() }, // Dynamic font size
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color(0xFF1D1B20),
-                    )
+                TextTrailingIcon()
+                Spacer(Modifier.height(screenWidth * 0.004f)) // Dynamic spacing
+                TextTrailingIcon(
+                    text = "+91 1234567890",
+                    icon = painterResource(R.drawable.baseline_phone_iphone_24)
                 )
-                Spacer(Modifier.weight(1f))
-                Image(
-                    painter = painterResource(R.drawable.image_53),
-                    contentDescription = "Completed",
-                    contentScale = ContentScale.FillBounds,
-                    modifier = Modifier
-                        .size(screenWidth * 0.07f) // Responsive image size
+                Spacer(Modifier.height(screenWidth * 0.004f))
+                TextTrailingIcon(
+                    text = "+91 1234567890",
+                    icon = painterResource(R.drawable.image_45)
                 )
+                Spacer(Modifier.height(screenWidth * 0.006f))
             }
-            TextTrailingIcon()
-            Spacer(Modifier.height(screenWidth * 0.004f)) // Dynamic spacing
-            TextTrailingIcon(
-                text = "+91 1234567890",
-                icon = painterResource(R.drawable.baseline_phone_iphone_24)
-            )
-            Spacer(Modifier.height(screenWidth * 0.004f))
-            TextTrailingIcon(
-                text = "+91 1234567890",
-                icon = painterResource(R.drawable.image_45)
-            )
-            Spacer(Modifier.height(screenWidth * 0.006f))
         }
+    }else{
+        ContactDetails1(
+            modifier = modifier,
+            onClick = onClick
+        )
     }
+
+
 }
 
 @Composable
@@ -577,6 +592,57 @@ private fun PrimaryDetails2(
             }
             Text(
                 text = "Primary Details Part 2",
+                style = TextStyle(
+                    fontSize = with(density) { (screenWidth * 0.04f).toSp() }, // Dynamic font size
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFF1D1B20),
+                )
+            )
+        }
+    }
+}
+
+
+@Composable
+private fun ContactDetails1(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
+) {
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    val density = LocalDensity.current
+
+    Card(
+        modifier = modifier
+            .shadow(
+                elevation = screenWidth * 0.03f, // Dynamic elevation
+                shape = RoundedCornerShape(screenWidth * 0.06f),
+                spotColor = Color.Black,
+                ambientColor = Color.DarkGray
+            )
+            .height(screenWidth * 0.15f), // Scales with screen size
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFFF4F4F4)
+        ),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = screenWidth * 0.025f),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(
+                onClick = onClick
+            ) {
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowRight,
+                    contentDescription = "Minimize",
+                    modifier = Modifier
+                        .size(screenWidth * 0.08f), // Scales icon size dynamically
+                    tint = Color.Black
+                )
+            }
+            Text(
+                text = "Contact Details",
                 style = TextStyle(
                     fontSize = with(density) { (screenWidth * 0.04f).toSp() }, // Dynamic font size
                     fontWeight = FontWeight.SemiBold,
