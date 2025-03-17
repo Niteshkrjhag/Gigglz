@@ -17,4 +17,5 @@
     <color name="LightGrayColor">#CCCCCC</color>
     <color name="OtpBoxBackground">#F4BB10</color>
     <color name="IconColor">#6C7072</color>
+    <color name="profileTopSectionBackground">#0D0456</color>
 </resources>
