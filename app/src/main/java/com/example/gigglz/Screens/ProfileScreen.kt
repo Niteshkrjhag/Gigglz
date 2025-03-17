@@ -45,6 +45,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -63,6 +65,9 @@ fun ProfileScreen() {
     var phoneNum by remember{ mutableStateOf("") }
     var whatsAppNum by remember{ mutableStateOf("") }
     var isExpanded by remember{ mutableStateOf("") }
+
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -72,15 +77,14 @@ fun ProfileScreen() {
         Text(
             text = "Complete your Profile",
             style = TextStyle(
-                fontSize = 16.sp,
-                lineHeight = 16.sp,
-                fontWeight = FontWeight(700),
+                fontSize = with(LocalDensity.current) {(screenWidth * 0.04f).toSp()}, // Responsive font size
+                lineHeight = with(LocalDensity.current) {(screenWidth * 0.04f).toSp()},
+                fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
-                letterSpacing = 0.96.sp,
+                letterSpacing = with(LocalDensity.current){(screenWidth * 0.0025f).toSp()}, // Responsive letter spacing
             ),
             modifier = Modifier
-                .padding(horizontal = 15.dp)
-
+                .padding(horizontal = screenWidth * 0.05f) // Responsive padding
         )
         Spacer(Modifier.height(8.dp))
         CustomLinearProgressIndicator(
@@ -121,26 +125,29 @@ private fun TopSectionProfile(
     userName: String = "Sophia Rose",
     userEmail: String = "sophiar123@gmail.com"
 ) {
+    // Get screen width & height dynamically
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp.dp
+    val screenWidth = configuration.screenWidthDp.dp
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(300.dp),
+            .height(screenHeight * 0.38f), // Adjust height relative to screen size
         shape = RoundedCornerShape(
-            bottomStart = 24.dp,
-            bottomEnd = 24.dp,
-            topStart = 0.dp,
-            topEnd = 0.dp
+            bottomStart = screenWidth * 0.06f, // Scales based on screen width
+            bottomEnd = screenWidth * 0.06f
         ), // Keep top flat
         colors = CardDefaults.cardColors(
             containerColor = colorResource(R.color.profileTopSectionBackground)
         )
     ) {
         Spacer(Modifier.weight(0.75f))
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 50.dp),
+                .padding(horizontal = screenWidth * 0.12f), // Responsive padding
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -149,23 +156,23 @@ private fun TopSectionProfile(
                 contentDescription = "Profile Picture",
                 contentScale = ContentScale.FillBounds,
                 modifier = Modifier
-                    .size(90.dp)
-                    .clip(RoundedCornerShape(50.dp))
+                    .size(screenWidth * 0.22f) // Scales image based on screen width
+                    .clip(RoundedCornerShape(50))
             )
-            Spacer(Modifier.height(5.dp))
+
+            Spacer(Modifier.height(screenHeight * 0.007f))
+
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                horizontalArrangement = Arrangement.spacedBy(screenWidth * 0.01f)
             ) {
                 Text(
-                    text = "$userName",
+                    text = userName,
                     style = TextStyle(
-                        fontSize = 16.sp,
-                        lineHeight = 16.sp,
-                        fontWeight = FontWeight(700),
+                        fontSize = with(LocalDensity.current) { (screenWidth * 0.045f).toSp() }, // Convert Dp to Sp
+                        fontWeight = FontWeight.Bold,
                         color = Color(0xFFF4F4F4),
-
-                        )
+                    )
                 )
                 RatingWithStars(
                     rating = 4.2,
@@ -173,23 +180,25 @@ private fun TopSectionProfile(
                     starColor = Color(0xFFF4BB10)
                 )
             }
-            Spacer(Modifier.height(4.dp))
+
+            Spacer(Modifier.height(screenHeight * 0.005f))
+
             Text(
-                text = "$userEmail",
+                text = userEmail,
                 style = TextStyle(
-                    fontSize = 14.sp,
-                    lineHeight = 16.sp,
-                    fontWeight = FontWeight(400),
+                    fontSize = with(LocalDensity.current) { (screenWidth * 0.04f).toSp() },
+                    fontWeight = FontWeight.Medium,
                     color = Color(0xFFFFFFFF),
                     textAlign = TextAlign.Center,
                 )
-
             )
-            Spacer(Modifier.height(25.dp))
+
+            Spacer(Modifier.height(screenHeight * 0.03f)) // Responsive spacing
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp),
+                    .height(screenHeight * 0.065f), // Scales with screen size
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -200,36 +209,33 @@ private fun TopSectionProfile(
                     bottom = "Part-time Jobs"
                 )
                 VerticalDivider()
-                Column() {
+                Column {
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
                             text = "4.1",
-                            fontSize = 16.sp,
+                            fontSize = with(LocalDensity.current) { (screenWidth * 0.045f).toSp() },
                             color = Color.White,
-                            fontWeight = FontWeight(600)
+                            fontWeight = FontWeight.SemiBold
                         )
                         Icon(
                             imageVector = Icons.Default.Star,
                             contentDescription = "Star",
                             tint = Color(0xFFF4F4F4),
-                            modifier = Modifier
-                                .size(13.dp)
+                            modifier = Modifier.size(screenWidth * 0.035f)
                         )
                     }
                     Text(
                         text = "Last Gig",
                         style = TextStyle(
-                            fontSize = 14.sp,
-                            lineHeight = 16.sp,
-                            fontWeight = FontWeight(300),
+                            fontSize = with(LocalDensity.current) { (screenWidth * 0.04f).toSp() },
+                            fontWeight = FontWeight.Light,
                             color = Color(0xFFFFFFFF),
                             textAlign = TextAlign.Center
                         )
                     )
                 }
-
             }
         }
         Spacer(Modifier.weight(0.2f))
@@ -358,28 +364,30 @@ fun CustomLinearProgressIndicator(
 @Composable
 private fun ContactDetails(
     modifier: Modifier = Modifier,
-    email:String,
-    phoneNum : String,
-    whatsAppNum :String
+    email: String,
+    phoneNum: String,
+    whatsAppNum: String
 ) {
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    val density = LocalDensity.current
+
     Card(
         modifier = modifier
             .shadow(
                 elevation = 12.dp,
-                shape = RoundedCornerShape(24.dp),
+                shape = RoundedCornerShape(screenWidth * 0.06f), // Dynamic corner radius
                 spotColor = Color.Black,
                 ambientColor = Color.DarkGray
             ),
-        shape = RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(screenWidth * 0.06f),
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFFF4F4F4)
         )
-
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier.padding(screenWidth * 0.04f), // Responsive padding
+            verticalArrangement = Arrangement.spacedBy(screenWidth * 0.008f) // Responsive spacing
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
@@ -391,15 +399,15 @@ private fun ContactDetails(
                         imageVector = Icons.Default.KeyboardArrowDown,
                         contentDescription = "Minimize",
                         modifier = Modifier
-                            .size(48.dp),
+                            .size(screenWidth * 0.12f), // Dynamic icon size
                         tint = Color.Black
                     )
                 }
                 Text(
                     text = "Contact Details",
                     style = TextStyle(
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight(600),
+                        fontSize = with(density) { (screenWidth * 0.04f).toSp() }, // Dynamic font size
+                        fontWeight = FontWeight.SemiBold,
                         color = Color(0xFF1D1B20),
                     )
                 )
@@ -409,48 +417,50 @@ private fun ContactDetails(
                     contentDescription = "Completed",
                     contentScale = ContentScale.FillBounds,
                     modifier = Modifier
-                        .size(26.dp)
+                        .size(screenWidth * 0.07f) // Responsive image size
                 )
             }
             TextTrailingIcon()
-            Spacer(Modifier.height(1.dp))
+            Spacer(Modifier.height(screenWidth * 0.004f)) // Dynamic spacing
             TextTrailingIcon(
                 text = "+91 1234567890",
                 icon = painterResource(R.drawable.baseline_phone_iphone_24)
             )
-            Spacer(Modifier.height(1.dp))
+            Spacer(Modifier.height(screenWidth * 0.004f))
             TextTrailingIcon(
-                icon = painterResource(R.drawable.image_45),
-                text = "+91 1234567890"
+                text = "+91 1234567890",
+                icon = painterResource(R.drawable.image_45)
             )
-            Spacer(Modifier.height(2.dp))
+            Spacer(Modifier.height(screenWidth * 0.006f))
         }
     }
 }
-
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun TextTrailingIcon(
     text: String = "sophiar123@gmail.com",
-    value: String = "",
-    onValueChange: (String) -> Unit = {},
-    icon: Painter = painterResource(R.drawable.baseline_email_24)
+    icon: Painter = painterResource(R.drawable.baseline_email_24),
+    onValueChange: (String) -> Unit = {}
 ) {
-    var email by remember{ mutableStateOf("") }
-    var phoneNum by remember{ mutableStateOf("") }
-    var whatsAppNum by remember{ mutableStateOf("") }
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    val density = LocalDensity.current
+
+    var inputValue by remember { mutableStateOf("") }
 
     OutlinedTextField(
-        value = email,
-        onValueChange = {email = it},
+        value = inputValue,
+        onValueChange = {
+            inputValue = it
+            onValueChange(it)
+        },
         placeholder = {
             Text(
                 text = text,
                 style = TextStyle(
-                    fontSize = 14.sp,
-                    lineHeight = 16.sp,
-                    fontWeight = FontWeight(500),
+                    fontSize = with(density) { (screenWidth * 0.035f).toSp() }, // Dynamic font size
+                    lineHeight = with(density) { (screenWidth * 0.04f).toSp() },
+                    fontWeight = FontWeight.Medium,
                     color = Color(0x991D1B20),
                 )
             )
@@ -460,18 +470,18 @@ private fun TextTrailingIcon(
                 painter = icon,
                 contentDescription = "null",
                 modifier = Modifier
-                    .size(20.dp)
+                    .size(screenWidth * 0.06f) // Dynamic icon size
             )
         },
         modifier = Modifier
-            .height(48.dp)
-            .background(color = Color(0x1406014B), shape = RoundedCornerShape(12.dp))
+            .height(screenWidth * 0.13f) // Dynamic height
+            .background(color = Color(0x1406014B), shape = RoundedCornerShape(screenWidth * 0.03f))
             .fillMaxWidth(),
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = Color.Transparent,  // Hide border when focused
-            unfocusedBorderColor = Color.Transparent, // Hide border when unfocused
-            disabledBorderColor = Color.Transparent, // Hide border when disabled
-            errorBorderColor = Color.Transparent // Hide border when error occurs
+            focusedBorderColor = Color.Transparent,
+            unfocusedBorderColor = Color.Transparent,
+            disabledBorderColor = Color.Transparent,
+            errorBorderColor = Color.Transparent
         )
     )
 }
@@ -480,15 +490,18 @@ private fun TextTrailingIcon(
 private fun PrimaryDetails1(
     modifier: Modifier = Modifier
 ) {
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    val density = LocalDensity.current
+
     Card(
         modifier = modifier
             .shadow(
-                elevation = 12.dp,
-                shape = RoundedCornerShape(24.dp),
+                elevation = screenWidth * 0.03f, // Dynamic elevation
+                shape = RoundedCornerShape(screenWidth * 0.06f),
                 spotColor = Color.Black,
                 ambientColor = Color.DarkGray
             )
-            .height(60.dp),
+            .height(screenWidth * 0.15f), // Scales with screen size
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFFF4F4F4)
         ),
@@ -496,8 +509,7 @@ private fun PrimaryDetails1(
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 10.dp)
-            ,
+                .padding(start = screenWidth * 0.025f),
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(
@@ -507,15 +519,15 @@ private fun PrimaryDetails1(
                     imageVector = Icons.Default.KeyboardArrowRight,
                     contentDescription = "Minimize",
                     modifier = Modifier
-                        .size(32.dp),
+                        .size(screenWidth * 0.08f), // Scales icon size dynamically
                     tint = Color.Black
                 )
             }
             Text(
-                text = "Primary Details Part 2",
+                text = "Primary Details Part 1",
                 style = TextStyle(
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight(600),
+                    fontSize = with(density) { (screenWidth * 0.04f).toSp() }, // Dynamic font size
+                    fontWeight = FontWeight.SemiBold,
                     color = Color(0xFF1D1B20),
                 )
             )
@@ -530,15 +542,18 @@ private fun PrimaryDetails1(
 private fun PrimaryDetails2(
     modifier: Modifier = Modifier
 ) {
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    val density = LocalDensity.current
+
     Card(
         modifier = modifier
             .shadow(
-                elevation = 12.dp,
-                shape = RoundedCornerShape(24.dp),
+                elevation = screenWidth * 0.03f, // Dynamic elevation
+                shape = RoundedCornerShape(screenWidth * 0.06f),
                 spotColor = Color.Black,
                 ambientColor = Color.DarkGray
             )
-            .height(60.dp),
+            .height(screenWidth * 0.15f), // Scales with screen size
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFFF4F4F4)
         ),
@@ -546,8 +561,7 @@ private fun PrimaryDetails2(
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 10.dp)
-            ,
+                .padding(start = screenWidth * 0.025f),
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(
@@ -557,15 +571,15 @@ private fun PrimaryDetails2(
                     imageVector = Icons.Default.KeyboardArrowRight,
                     contentDescription = "Minimize",
                     modifier = Modifier
-                        .size(32.dp),
+                        .size(screenWidth * 0.08f), // Scales icon size dynamically
                     tint = Color.Black
                 )
             }
             Text(
                 text = "Primary Details Part 2",
                 style = TextStyle(
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight(600),
+                    fontSize = with(density) { (screenWidth * 0.04f).toSp() }, // Dynamic font size
+                    fontWeight = FontWeight.SemiBold,
                     color = Color(0xFF1D1B20),
                 )
             )
