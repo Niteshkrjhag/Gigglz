@@ -87,7 +87,10 @@ fun ResponsiveImage(
         painter = painterResource(R.drawable.gigglzlogo),
         contentDescription = "App Logo",
         modifier = modifier
-            .size(width = screenWidth * 0.4f, height = screenHeight * 0.08f) // 40% of width, 8% of height
+            .size(
+                width = screenWidth * 0.4f,
+                height = screenHeight * 0.08f
+            ) // 40% of width, 8% of height
             .offset(y = 5.dp)
     )
 }
@@ -96,9 +99,10 @@ fun ResponsiveImage(
 @Preview(showSystemUi = true)
 @Composable
 fun TopAppBarr(
-    navController: NavHostController= rememberNavController()
+    navController: NavHostController
 ) {
     var isDrawerOpen by remember { mutableStateOf(false) }
+    val bottomNavController = rememberNavController()
     Box(Modifier.fillMaxSize()) {
         Scaffold(
             modifier =
@@ -158,13 +162,13 @@ fun TopAppBarr(
                 }
             },
             bottomBar = {
-                BottomNavigationBar(navController)
+                BottomNavigationBar(bottomNavController)
             }
         ) { innerPadding ->
             Box(
                 modifier = Modifier.padding(innerPadding)
             ) {
-                NavigationGraph(navController = navController) // Place navigation inside content area
+                NavigationGraph(bottomNavController) // Place navigation inside content area
 
                 // Dimmed background when drawer is open
                 if (isDrawerOpen) {
@@ -177,33 +181,36 @@ fun TopAppBarr(
                 }
             }
         }
-                AnimatedVisibility(
-                    visible = isDrawerOpen,
-                    enter = slideInHorizontally { -it },
-                    exit = slideOutHorizontally { -it }
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .width(if(LocalConfiguration.current.screenWidthDp.dp <= 360.dp) 250.dp else 300.dp)
-                            .background(Color.White, shape = RoundedCornerShape(0.dp))
-                            // .zIndex(1f) // Make sure drawer is on top
-                            .clickable(
-                                indication = null, // Disable ripple effect
-                                interactionSource = remember { MutableInteractionSource() } // Prevent interaction state tracking
-                            ) {
-                                // Handle click
-                            }
+        AnimatedVisibility(
+            visible = isDrawerOpen,
+            enter = slideInHorizontally { -it },
+            exit = slideOutHorizontally { -it }
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(if (LocalConfiguration.current.screenWidthDp.dp <= 360.dp) 250.dp else 300.dp)
+                    .background(Color.White, shape = RoundedCornerShape(0.dp))
+                    // .zIndex(1f) // Make sure drawer is on top
+                    .clickable(
+                        indication = null, // Disable ripple effect
+                        interactionSource = remember { MutableInteractionSource() } // Prevent interaction state tracking
                     ) {
-                        ProfileCard()
+                        // Handle click
                     }
-                }
+            ) {
+                ProfileCard(
+                    navController = navController
+                )
             }
         }
+    }
+}
+
 @Composable
 fun HomeScreenItem() {
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-    Log.i("Scr12","Screen size is ${screenWidth}")
+    Log.i("Scr12", "Screen size is ${screenWidth}")
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
     val isCompact = screenWidth <= 360.dp
     Box(
@@ -219,13 +226,14 @@ fun HomeScreenItem() {
 
             .border(
                 width = 0.33552.dp,
-               color = Color(0xFFE9EBED), // ✅ Adds a light border for better distinction
+                color = Color(0xFFE9EBED), // ✅ Adds a light border for better distinction
                 shape = RoundedCornerShape(12.dp),
             )
             .clip(RoundedCornerShape(12.dp)) // Clip corners to match shadow shape
             .background(
                 color = Color.White,
-                shape = RoundedCornerShape(12.dp)) // Background color of the Box
+                shape = RoundedCornerShape(12.dp)
+            ) // Background color of the Box
     ) {
 
         Favorite(
@@ -346,8 +354,8 @@ fun HomeScreenItem() {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
-                          //  .offset(y = if (LocalConfiguration.current.screenWidthDp <= 360) 4.dp else 8.dp)
-                    ){
+                        //  .offset(y = if (LocalConfiguration.current.screenWidthDp <= 360) 4.dp else 8.dp)
+                    ) {
                         Icon(
                             painter = painterResource(R.drawable.clock),
                             contentDescription = "Clock Icon",
@@ -377,7 +385,8 @@ fun HomeScreenItem() {
                         Spacer(Modifier.width(if (LocalConfiguration.current.screenWidthDp <= 360) 3.dp else 5.dp))
                         ItemTag(
 //                            modifier = Modifier.weight(0.5f),
-                            text = "Waiter")
+                            text = "Waiter"
+                        )
                         Spacer(Modifier.width(if (LocalConfiguration.current.screenWidthDp <= 360) 3.dp else 5.dp))
                         BodyText(
                             modifier = Modifier,
@@ -430,7 +439,7 @@ fun NavigationGraph(navController: NavHostController) {
         }
         composable("search") { SearchScreen() }
         composable("amount") { AmountScreen() }
-        composable("home"){
+        composable("home") {
             HomeScreen()
         }
     }
@@ -485,6 +494,7 @@ fun formatCurrency(amount: Int, locale: Locale = Locale.getDefault()): String {
     currencyInstance.maximumFractionDigits = 0 // Remove decimals
     return currencyInstance.format(amount)
 }
+
 fun removeCommaFromCurrency(currencyString: String): String {
     return currencyString.replace(",", "").trim()
 }
@@ -520,7 +530,7 @@ fun ItemTag(
         else -> 6.dp
     }
 
-    val cornerRadius =10.dp
+    val cornerRadius = 10.dp
 
     Box(
         modifier = modifier
@@ -585,17 +595,17 @@ fun Favorite(
 
 @Composable
 fun SortingItemTag(
-    text:String = "Sort",
+    text: String = "Sort",
     modifier: Modifier = Modifier,
-    iconImg:Int = R.drawable.locationicon,
-    contentDescription:String = ""
+    iconImg: Int = R.drawable.locationicon,
+    contentDescription: String = ""
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val fontSizeSp = (screenWidth.value * 0.03).sp // Convert to sp
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(screenWidth * 0.01f) // Responsive spacing
-    ){
+    ) {
         Icon(
             painter = painterResource(iconImg),
             contentDescription = contentDescription,
@@ -605,7 +615,10 @@ fun SortingItemTag(
         )
         Box(
             modifier = Modifier
-                .size(width = screenWidth * 0.21f, height = screenWidth * 0.06f) // Responsive Box size
+                .size(
+                    width = screenWidth * 0.21f,
+                    height = screenWidth * 0.06f
+                ) // Responsive Box size
                 .border(
                     width = 1.dp,
                     shape = RoundedCornerShape(8.dp),
@@ -619,7 +632,7 @@ fun SortingItemTag(
                 modifier = Modifier.align(Alignment.Center),
                 text = text,
                 fontSize = fontSizeSp, // Responsive text size
-                lineHeight = fontSizeSp*1.2f,
+                lineHeight = fontSizeSp * 1.2f,
                 fontWeight = FontWeight(500),
                 fontColor = colorResource(R.color.SortingItem)
             )
@@ -638,8 +651,8 @@ fun BottomNavigationBar(navController: NavController) {
     NavigationBar(
         modifier = Modifier
             .padding(bottom = 5.dp)
-        .fillMaxWidth()
-        .fillMaxHeight(0.121f), // Responsive height (8% of screen height)
+            .fillMaxWidth()
+            .fillMaxHeight(0.121f), // Responsive height (8% of screen height)
         containerColor = Color.White
     ) {
 
@@ -654,11 +667,14 @@ fun BottomNavigationBar(navController: NavController) {
             NavigationBarItem(
                 modifier = Modifier
                     .weight(1f), // Ensures equal spacing
-                icon = { Icon(
-                    painterResource(id = item.icon),
-                    contentDescription = item.title,
-                    modifier = Modifier.size(iconSize))},
-           //      label = { Text(text = item.title) },
+                icon = {
+                    Icon(
+                        painterResource(id = item.icon),
+                        contentDescription = item.title,
+                        modifier = Modifier.size(iconSize)
+                    )
+                },
+                //      label = { Text(text = item.title) },
                 selected = currentRoute == item.screen_route,
                 colors = NavigationBarItemDefaults.colors( // Apply custom colors
                     selectedIconColor = Color.Black, // Set selected icon color

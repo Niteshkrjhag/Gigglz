@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -22,8 +24,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -57,7 +63,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.gigglz.R
-
+import java.util.Currency
+import java.util.Locale
 
 @Preview(showSystemUi = true)
 @Composable
@@ -65,13 +72,14 @@ fun ProfileScreen() {
     var email by remember{ mutableStateOf("") }
     var phoneNum by remember{ mutableStateOf("") }
     var whatsAppNum by remember{ mutableStateOf("") }
-    var isExpanded by remember{ mutableStateOf(true) }
+    var selectedCard by remember { mutableStateOf<String?>(null) } // Tracks the expanded card
 
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
 
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .navigationBarsPadding()
     ) {
         TopSectionProfile()
         Spacer(Modifier.height(20.dp))
@@ -94,8 +102,9 @@ fun ProfileScreen() {
         Spacer(Modifier.height(16.dp))
         Column(
             modifier = Modifier
-                .verticalScroll(rememberScrollState())
+               // .verticalScroll(rememberScrollState())
                 .fillMaxHeight()
+                .background(Color(0xFFF4F4F4))
         ){
             ContactDetails(
                 modifier = Modifier
@@ -103,22 +112,20 @@ fun ProfileScreen() {
                 email = email,
                 phoneNum = phoneNum,
                 whatsAppNum = whatsAppNum,
-                onClick = {isExpanded = !isExpanded},
-                isExpand = isExpanded
+                isExpand = selectedCard == "contact", // Expand only if selected
+                onClick = { selectedCard = if (selectedCard == "contact") null else "contact" }
             )
             Spacer(Modifier.height(8.dp))
-            PrimaryDetails1(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 15.dp)
+            PrimaryDetails_1(
+                isExpand = selectedCard == "primary1",
+                onClick = { selectedCard = if (selectedCard == "primary1") null else "primary1" }
             )
             Spacer(Modifier.height(8.dp))
-            PrimaryDetails2(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 15.dp)
+            PrimaryDetails_2(
+                isExpand = selectedCard == "primary2",
+                onClick = { selectedCard = if (selectedCard == "primary2") null else "primary2" }
             )
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(8.dp))
         }
     }
 }
@@ -364,20 +371,19 @@ fun CustomLinearProgressIndicator(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true)
 @Composable
 private fun ContactDetails(
     modifier: Modifier = Modifier,
     email: String,
     phoneNum: String,
     whatsAppNum: String,
-    onClick:()->Unit = {},
-    isExpand:Boolean = false
+    isExpand: Boolean, // Expand only if selected
+    onClick: () -> Unit = {}
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val density = LocalDensity.current
 
-    if(!isExpand){
+    if(isExpand){
         Card(
             modifier = modifier
                 .shadow(
@@ -406,7 +412,7 @@ private fun ContactDetails(
                             imageVector = Icons.Default.KeyboardArrowDown,
                             contentDescription = "Minimize",
                             modifier = Modifier
-                                .size(screenWidth * 0.12f), // Dynamic icon size
+                                .size(screenWidth * 0.08f), // Dynamic icon size
                             tint = Color.Black
                         )
                     }
@@ -447,13 +453,12 @@ private fun ContactDetails(
             onClick = onClick
         )
     }
-
-
 }
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun TextTrailingIcon(
+    modifier: Modifier = Modifier.fillMaxWidth(),
     text: String = "sophiar123@gmail.com",
     icon: Painter = painterResource(R.drawable.baseline_email_24),
     onValueChange: (String) -> Unit = {}
@@ -488,10 +493,9 @@ private fun TextTrailingIcon(
                     .size(screenWidth * 0.06f) // Dynamic icon size
             )
         },
-        modifier = Modifier
+        modifier = modifier
             .height(screenWidth * 0.13f) // Dynamic height
-            .background(color = Color(0x1406014B), shape = RoundedCornerShape(screenWidth * 0.03f))
-            .fillMaxWidth(),
+            .background(color = Color(0x1406014B), shape = RoundedCornerShape(screenWidth * 0.03f)),
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = Color.Transparent,
             unfocusedBorderColor = Color.Transparent,
@@ -503,7 +507,8 @@ private fun TextTrailingIcon(
 
 @Composable
 private fun PrimaryDetails1(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val density = LocalDensity.current
@@ -528,7 +533,7 @@ private fun PrimaryDetails1(
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(
-                onClick = {}
+                onClick = onClick
             ) {
                 Icon(
                     imageVector = Icons.Default.KeyboardArrowRight,
@@ -555,7 +560,8 @@ private fun PrimaryDetails1(
 
 @Composable
 private fun PrimaryDetails2(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val density = LocalDensity.current
@@ -572,6 +578,7 @@ private fun PrimaryDetails2(
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFFF4F4F4)
         ),
+        shape = RoundedCornerShape(screenWidth * 0.06f)
     ) {
         Row(
             modifier = Modifier
@@ -580,7 +587,7 @@ private fun PrimaryDetails2(
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(
-                onClick = {}
+                onClick = onClick
             ) {
                 Icon(
                     imageVector = Icons.Default.KeyboardArrowRight,
@@ -651,4 +658,557 @@ private fun ContactDetails1(
             )
         }
     }
+}
+
+@Preview(showBackground = true)
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun PrimaryDetails_1(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
+    isExpand:Boolean = true
+){
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    val density = LocalDensity.current
+    var inputValue by remember { mutableStateOf("") }
+    if(isExpand){
+        Card(
+            modifier = modifier
+                .shadow(
+                    elevation = 12.dp,
+                    shape = RoundedCornerShape(screenWidth * 0.12f), // Dynamic corner radius
+                    spotColor = Color.Black,
+                    ambientColor = Color.DarkGray
+                )
+                .padding(horizontal = 15.dp),
+            shape = RoundedCornerShape(screenWidth * 0.06f),
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0xFFF4F4F4)
+            )
+
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(screenWidth * 0.04f)
+                , // Responsive padding
+                verticalArrangement = Arrangement.spacedBy(screenWidth * 0.008f), // Responsive spacing
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+
+                ){
+                    IconButton(
+                        onClick = onClick
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowDown,
+                            contentDescription = "Minimize",
+                            modifier = Modifier
+                                .size(screenWidth *  0.08f), // Dynamic icon size
+                            tint = Color.Black
+                        )
+                    }
+                    Text(
+                        text = "Primary Details",
+                        style = TextStyle(
+                            fontSize = with(density) { (screenWidth * 0.04f).toSp() }, // Dynamic font size
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color(0xFF1D1B20),
+                        )
+                    )
+                    Spacer(Modifier.weight(1f))
+                    Text(
+                        text = "1/2",
+                        style = TextStyle(
+                            fontSize = with(density) { (screenWidth * 0.035f).toSp() }, // Dynamic font size
+                            fontWeight = FontWeight.Normal,
+                            color = Color.LightGray,
+                        )
+                    )
+                }
+                Spacer(Modifier.height(screenWidth * 0.004f))
+
+                OutlinedTextField(
+                    value = inputValue,
+                    onValueChange = {
+                        inputValue = it
+                    },
+                    placeholder = {
+                        Text(
+                            text = "Choose Industry*",
+                            style = TextStyle(
+                                fontSize = with(density) { (screenWidth * 0.035f).toSp() }, // Dynamic font size
+                                lineHeight = with(density) { (screenWidth * 0.04f).toSp() },
+                                fontWeight = FontWeight.Medium,
+                                color = Color(0x991D1B20),
+                            )
+                        )
+                    },
+                    trailingIcon = {
+                        Button(
+                            onClick = {},
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Black
+                            ),
+                            modifier = Modifier.padding(vertical = 5.dp)
+                        ){
+                            Text(
+                                text = "Category",
+                                style = TextStyle(
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight(900),
+                                    color = Color(0xFFFFFFFF),
+                                    textAlign = TextAlign.Center,
+                                )
+                            )
+                        }
+                    },
+                    modifier = Modifier
+                        .height(screenWidth * 0.13f) // Dynamic height
+                        .background(color = Color(0x1406014B), shape = RoundedCornerShape(screenWidth * 0.03f))
+                        .fillMaxWidth(),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color.Transparent,
+                        unfocusedBorderColor = Color.Transparent,
+                        disabledBorderColor = Color.Transparent,
+                        errorBorderColor = Color.Transparent
+                    )
+                )
+                Spacer(Modifier.height(screenWidth * 0.004f))
+                OutlinedTextField(
+                    value = inputValue,
+                    onValueChange = {
+                        inputValue = it
+                    },
+                    placeholder = {
+                        Text(
+                            text = "Full name as per Aadhar",
+                            style = TextStyle(
+                                fontSize = with(density) { (screenWidth * 0.035f).toSp() }, // Dynamic font size
+                                lineHeight = with(density) { (screenWidth * 0.04f).toSp() },
+                                fontWeight = FontWeight.Medium,
+                                color = Color(0x991D1B20),
+                            )
+                        )
+                    },
+                    modifier = Modifier
+                        .height(screenWidth * 0.13f) // Dynamic height
+                        .background(color = Color(0x1406014B), shape = RoundedCornerShape(screenWidth * 0.03f))
+                        .fillMaxWidth(),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color.Transparent,
+                        unfocusedBorderColor = Color.Transparent,
+                        disabledBorderColor = Color.Transparent,
+                        errorBorderColor = Color.Transparent
+                    )
+                )
+                Spacer(Modifier.height(screenWidth * 0.004f))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ){
+                    OutlinedTextField(
+                        value = inputValue,
+                        onValueChange = {
+                            inputValue = it
+                        },
+                        placeholder = {
+                            Text(
+                                text = "DOB (DD-MM-YYYY)*",
+                                style = TextStyle(
+                                    fontSize = with(density) { (screenWidth * 0.035f).toSp() }, // Dynamic font size
+                                    lineHeight = with(density) { (screenWidth * 0.04f).toSp() },
+                                    fontWeight = FontWeight.Medium,
+                                    color = Color(0x991D1B20),
+                                )
+                            )
+                        },
+                        modifier = Modifier
+                            .height(screenWidth * 0.13f) // Dynamic height
+                            .background(color = Color(0x1406014B), shape = RoundedCornerShape(screenWidth * 0.03f))
+                            .weight(0.60f),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = Color.Transparent,
+                            unfocusedBorderColor = Color.Transparent,
+                            disabledBorderColor = Color.Transparent,
+                            errorBorderColor = Color.Transparent
+                        )
+                    )
+                    OutlinedTextField(
+                        value = inputValue,
+                        onValueChange = {
+                            inputValue = it
+                        },
+                        placeholder = {
+                            Text(
+                                text = "Gender",
+                                style = TextStyle(
+                                    fontSize = with(density) { (screenWidth * 0.035f).toSp() }, // Dynamic font size
+                                    lineHeight = with(density) { (screenWidth * 0.04f).toSp() },
+                                    fontWeight = FontWeight.Medium,
+                                    color = Color(0x991D1B20),
+                                )
+                            )
+                        },
+                        trailingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.KeyboardArrowDown,
+                                contentDescription = "null",
+                                modifier = Modifier
+                                    .size(screenWidth * 0.06f) // Dynamic icon size
+                            )
+                        },
+                        modifier = modifier
+                            .weight(0.30f)
+                            .height(screenWidth * 0.13f) // Dynamic height
+                            .background(color = Color(0x1406014B), shape = RoundedCornerShape(screenWidth * 0.03f)),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = Color.Transparent,
+                            unfocusedBorderColor = Color.Transparent,
+                            disabledBorderColor = Color.Transparent,
+                            errorBorderColor = Color.Transparent
+                        )
+                    )
+
+                }
+                Spacer(Modifier.height(screenWidth * 0.004f))
+                OutlinedTextField(
+                    value = inputValue,
+                    onValueChange = {
+                        inputValue = it
+                    },
+                    placeholder = {
+                        Text(
+                            text = "${getCurrencySymbol(Locale("hi", "IN"))} Annual Income",
+                            style = TextStyle(
+                                fontSize = with(density) { (screenWidth * 0.035f).toSp() }, // Dynamic font size
+                                lineHeight = with(density) { (screenWidth * 0.04f).toSp() },
+                                fontWeight = FontWeight.Medium,
+                                color = Color(0x991D1B20),
+                            )
+                        )
+                    },
+                    trailingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowDown,
+                            contentDescription = "null",
+                            modifier = Modifier
+                                .size(screenWidth * 0.06f) // Dynamic icon size
+                        )
+                    },
+                    modifier = modifier
+                        .height(screenWidth * 0.13f) // Dynamic height
+                        .fillMaxSize()
+                        .background(color = Color(0x1406014B),
+                            shape = RoundedCornerShape(screenWidth * 0.03f)),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color.Transparent,
+                        unfocusedBorderColor = Color.Transparent,
+                        disabledBorderColor = Color.Transparent,
+                        errorBorderColor = Color.Transparent
+                    )
+                )
+                Spacer(Modifier.height(screenWidth * 0.004f))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    Checkbox(
+                        checked = false,
+                        onCheckedChange = {},
+                        modifier = Modifier
+                            .offset(x = -10.dp),
+                        colors = CheckboxDefaults.colors(
+                            uncheckedColor =  Color(0x80090727)
+                        )
+                    )
+                    Text(
+                        text = "I am a student",
+                        style = TextStyle(
+                            fontSize = with(density) { (screenWidth * 0.035f).toSp() }, // Dynamic font size
+                            lineHeight = with(density) { (screenWidth * 0.04f).toSp() },
+                            fontWeight = FontWeight.Medium,
+                            color = Color(0x991D1B20),
+                        ),
+                        modifier = Modifier
+                            .offset(x=-10.dp)
+                    )
+
+                }
+//                Spacer(Modifier.height(screenWidth * 0.007f))
+            }
+        }
+    }else{
+        PrimaryDetails1(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 15.dp),
+            onClick = onClick
+        )
+    }
+
+}
+
+fun getCurrencySymbol(locale: Locale): String {
+    val currency = Currency.getInstance(locale)
+    return currency.symbol
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
+@Composable
+private fun PrimaryDetails_2(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
+    isExpand:Boolean = false
+){
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    val density = LocalDensity.current
+    var inputValue by remember { mutableStateOf("") }
+    if(isExpand){
+        Card(
+            modifier = modifier
+                .shadow(
+                    elevation = 12.dp,
+                    shape = RoundedCornerShape(screenWidth * 0.12f), // Dynamic corner radius
+                    spotColor = Color.Black,
+                    ambientColor = Color.DarkGray
+                )
+                .padding(horizontal = 15.dp),
+            shape = RoundedCornerShape(screenWidth * 0.06f),
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0xFFF4F4F4)
+            )
+
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(screenWidth * 0.04f), // Responsive padding
+                verticalArrangement = Arrangement.spacedBy(screenWidth * 0.008f) // Responsive spacing
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    IconButton(
+                        onClick = onClick
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowDown,
+                            contentDescription = "Minimize",
+                            modifier = Modifier
+                                .size(screenWidth *  0.08f), // Dynamic icon size
+                            tint = Color.Black
+                        )
+                    }
+                    Text(
+                        text = "Primary Details",
+                        style = TextStyle(
+                            fontSize = with(density) { (screenWidth * 0.04f).toSp() }, // Dynamic font size
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color(0xFF1D1B20),
+                        )
+                    )
+                    Spacer(Modifier.weight(1f))
+                    Text(
+                        text = "2/2",
+                        style = TextStyle(
+                            fontSize = with(density) { (screenWidth * 0.035f).toSp() }, // Dynamic font size
+                            fontWeight = FontWeight.Normal,
+                            color = Color.LightGray,
+                        )
+                    )
+                }
+                Spacer(Modifier.height(screenWidth * 0.004f))
+
+                OutlinedTextField(
+                    value = inputValue,
+                    onValueChange = {
+                        inputValue = it
+                    },
+                    placeholder = {
+                        Text(
+                            text = "Location",
+                            style = TextStyle(
+                                fontSize = with(density) { (screenWidth * 0.035f).toSp() }, // Dynamic font size
+                                lineHeight = with(density) { (screenWidth * 0.04f).toSp() },
+                                fontWeight = FontWeight.Medium,
+                                color = Color(0x991D1B20),
+                            )
+                        )
+                    },
+                    trailingIcon = {
+                        IconButton(onClick = {}) {
+                            Icon(
+                                painter = painterResource(R.drawable.location_target),
+                                contentDescription = "Target Location"
+                            )
+                        }
+                    },
+                    modifier = Modifier
+                        .height(screenWidth * 0.13f) // Dynamic height
+                        .background(color = Color(0x1406014B), shape = RoundedCornerShape(screenWidth * 0.03f))
+                        .fillMaxWidth(),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color.Transparent,
+                        unfocusedBorderColor = Color.Transparent,
+                        disabledBorderColor = Color.Transparent,
+                        errorBorderColor = Color.Transparent
+                    )
+                )
+                Spacer(Modifier.height(screenWidth * 0.004f))
+
+                OutlinedTextField(
+                    value = inputValue,
+                    onValueChange = {
+                        inputValue = it
+                    },
+                    placeholder = {
+                        Text(
+                            text = "Work Experience(in months)",
+                            style = TextStyle(
+                                fontSize = with(density) { (screenWidth * 0.035f).toSp() }, // Dynamic font size
+                                lineHeight = with(density) { (screenWidth * 0.04f).toSp() },
+                                fontWeight = FontWeight.Medium,
+                                color = Color(0x991D1B20),
+                            )
+                        )
+                    },
+                    leadingIcon ={
+                        Icon(
+                            painter = painterResource(R.drawable.brifecase_timer),
+                            contentDescription = "null",
+                            modifier = Modifier
+                                .size(screenWidth * 0.06f) // Dynamic icon size
+                        )
+                    },
+                    trailingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowDown,
+                            contentDescription = "null",
+                            modifier = Modifier
+                                .size(screenWidth * 0.06f) // Dynamic icon size
+                        )
+                    },
+                    modifier = Modifier
+                        .height(screenWidth * 0.13f) // Dynamic height
+                        .background(color = Color(0x1406014B), shape = RoundedCornerShape(screenWidth * 0.03f))
+                        .fillMaxWidth(),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color.Transparent,
+                        unfocusedBorderColor = Color.Transparent,
+                        disabledBorderColor = Color.Transparent,
+                        errorBorderColor = Color.Transparent
+                    )
+                )
+                Spacer(Modifier.height(screenWidth * 0.004f))
+                OutlinedTextField(
+                    value = inputValue,
+                    onValueChange = {
+                        inputValue = it
+                    },
+                    placeholder = {
+                        Text(
+                            text = "Highest Education",
+                            style = TextStyle(
+                                fontSize = with(density) { (screenWidth * 0.035f).toSp() }, // Dynamic font size
+                                lineHeight = with(density) { (screenWidth * 0.04f).toSp() },
+                                fontWeight = FontWeight.Medium,
+                                color = Color(0x991D1B20),
+                            )
+                        )
+                    },
+                    leadingIcon ={
+                        Icon(
+                            painter = painterResource(R.drawable.graduation_cap_02),
+                            contentDescription = "null",
+                            modifier = Modifier
+                                .size(screenWidth * 0.06f) // Dynamic icon size
+                        )
+                    },
+                    trailingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowDown,
+                            contentDescription = "null",
+                            modifier = Modifier
+                                .size(screenWidth * 0.06f) // Dynamic icon size
+                        )
+                    },
+                    modifier = modifier
+                        .height(screenWidth * 0.13f) // Dynamic height
+                        .fillMaxSize()
+                        .background(color = Color(0x1406014B),
+                            shape = RoundedCornerShape(screenWidth * 0.03f)),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color.Transparent,
+                        unfocusedBorderColor = Color.Transparent,
+                        disabledBorderColor = Color.Transparent,
+                        errorBorderColor = Color.Transparent
+                    )
+                )
+                Spacer(Modifier.height(screenWidth * 0.004f))
+                OutlinedTextField(
+                    value = inputValue,
+                    onValueChange = {
+                        inputValue = it
+                    },
+                    placeholder = {
+                        Text(
+                            text = "Work Preference",
+                            style = TextStyle(
+                                fontSize = with(density) { (screenWidth * 0.035f).toSp() }, // Dynamic font size
+                                lineHeight = with(density) { (screenWidth * 0.04f).toSp() },
+                                fontWeight = FontWeight.Medium,
+                                color = Color(0x991D1B20),
+                            )
+                        )
+                    },
+                    trailingIcon = {
+                        Button(
+                            onClick = {},
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Black
+                            ),
+                            modifier = Modifier
+                                .padding(vertical = 5.dp)
+                        ){
+                            Text(
+                                text = "Choose",
+                                style = TextStyle(
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight(900),
+                                    color = Color(0xFFFFFFFF),
+                                    textAlign = TextAlign.Center,
+                                )
+                            )
+                        }
+                    },
+                    modifier = Modifier
+                        .height(screenWidth * 0.13f) // Dynamic height
+                        .background(color = Color(0x1406014B), shape = RoundedCornerShape(screenWidth * 0.03f))
+                        .fillMaxWidth(),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color.Transparent,
+                        unfocusedBorderColor = Color.Transparent,
+                        disabledBorderColor = Color.Transparent,
+                        errorBorderColor = Color.Transparent
+                    )
+                )
+                Spacer(Modifier.height(screenWidth * 0.007f))
+            }
+        }
+    }else{
+        PrimaryDetails2(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 15.dp),
+            onClick = onClick
+        )
+    }
+
 }

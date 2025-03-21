@@ -2,7 +2,7 @@ package com.example.gigglz.components
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,7 +17,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -35,6 +34,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.gigglz.R
 
 
@@ -42,7 +42,8 @@ import com.example.gigglz.R
 fun ProfileCard(
     modifier: Modifier = Modifier,
     name: String = "Sophia Rose",
-    email: String = "sophiar123@gmail.com"
+    email: String = "sophiar123@gmail.com",
+    navController: NavController
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
@@ -96,7 +97,11 @@ fun ProfileCard(
         ) {
             Spacer(Modifier.height(if (screenHeight <= 600.dp) 16.dp else 24.dp))
                 IconAndText(
-                    id = R.drawable.user
+                    id = R.drawable.user,
+                    onClick = {
+                        navController.navigate("profile")
+                        // Ensure that it doesn't keep stacking multiple ProfileScreens
+                    }
                 )
                 IconAndText(
                     text = "Settings",
@@ -145,10 +150,13 @@ fun IconAndText(
     size: Dp = if (LocalConfiguration.current.screenWidthDp <= 360) 22.dp else 26.dp,
     textSize: TextUnit = if (LocalConfiguration.current.screenWidthDp <= 360) 14.sp else 18.sp,
     textColor: Color = Color(0xFF0F0F0F),
-    iconColor: Color = colorResource(R.color.IconColor)
+    iconColor: Color = colorResource(R.color.IconColor),
+    onClick: () -> Unit = {} // 🔥 Function to handle clicks
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth()
+            .clickable { onClick() },
+        // 🔥 Added onClick,
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(
             if (LocalConfiguration.current.screenWidthDp <= 360) 12.dp else 20.dp
@@ -169,10 +177,4 @@ fun IconAndText(
             )
         )
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ProfileCardPreview() {
-    ProfileCard()
 }
