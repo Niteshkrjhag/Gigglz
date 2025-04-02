@@ -32,6 +32,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.gigglz.R
 import com.example.gigglz.components.HomeScreenItem
@@ -39,14 +40,19 @@ import com.example.gigglz.components.SortingItemTag
 
 @Preview(showSystemUi = true)
 @Composable
-fun HomeScreen(){
-    val navController = rememberNavController()
-    content()
+fun HomeScreen(
+    navController: NavController
+){
+    content(
+        navController = navController
+    )
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun content() {
+private fun content(
+    navController: NavController
+) {
     val items = remember { List(30) { "Item $it" } } // Example items
     Column(
         modifier = Modifier
@@ -103,7 +109,9 @@ private fun content() {
                         animationSpec = tween(durationMillis = 500)
                     )
                 )  {
-                    HomeScreenItem()
+                    HomeScreenItem(
+                        navController = navController
+                    )
             }
             }
         }

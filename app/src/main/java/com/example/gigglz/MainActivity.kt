@@ -15,6 +15,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.gigglz.Screens.GigPage7
+import com.example.gigglz.Screens.GigPage8
 import com.example.gigglz.Screens.HomeScreen
 import com.example.gigglz.Screens.ProfileScreen
 import com.example.gigglz.Screens.signup1
@@ -37,6 +39,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController() // Defined at a stable level
             APP(navController)
+
         }
     }
 }
@@ -96,7 +99,16 @@ fun APP(
 //        composable("home"){
 //            HomeScreen()
 //        }
-
+        composable(route = "GigPage7"){
+            GigPage7(
+                navController
+            )
+        }
+        composable(route = "GigPage8"){
+            GigPage8(
+               // navController
+            )
+        }
     }
 }
 

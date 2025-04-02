@@ -70,6 +70,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.gigglz.R
+import com.example.gigglz.Screens.GigPage7
+import com.example.gigglz.Screens.GigPage8
 import com.example.gigglz.Screens.HomeScreen
 import java.text.DecimalFormat
 import java.util.Locale
@@ -208,7 +210,9 @@ fun TopAppBarr(
 }
 
 @Composable
-fun HomeScreenItem() {
+fun HomeScreenItem(
+    navController: NavController
+) {
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     Log.i("Scr12", "Screen size is ${screenWidth}")
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
@@ -234,6 +238,9 @@ fun HomeScreenItem() {
                 color = Color.White,
                 shape = RoundedCornerShape(12.dp)
             ) // Background color of the Box
+            .clickable {
+                navController.navigate("gigpage7")
+            }
     ) {
 
         Favorite(
@@ -440,7 +447,19 @@ fun NavigationGraph(navController: NavHostController) {
         composable("search") { SearchScreen() }
         composable("amount") { AmountScreen() }
         composable("home") {
-            HomeScreen()
+            HomeScreen(
+                navController = navController
+            )
+        }
+        composable("gigpage7"){
+            GigPage7(
+                navController = navController
+            )
+        }
+        composable("gigpage8"){
+           GigPage8(
+               //navController = navController
+           )
         }
     }
 }
